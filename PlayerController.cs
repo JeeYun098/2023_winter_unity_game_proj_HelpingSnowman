@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public GameManager gameManager;
+
     Rigidbody2D rb;
     float axisH = 0.0f;
     public float speed = 3.0f;   // 이동 속도
@@ -22,8 +24,13 @@ public class PlayerController : MonoBehaviour
     public float defaultTime = 0.3f;
     private float dashTime;        // 대쉬 시간
 
-    //수정된 부분 (생명추가)
-    public static int life = 3;          // 생명
+    public GameObject objPrefab;   // 발사체
+    public float maxShotDelay = 1.0f;
+    public float curShotDelay;
+    public float fireSpeedx = 4.0f;
+    bool zero = true;
+
+    private SpriteRenderer spriteRenderer;
 
     // Start is called before the first frame update
     void Start()
@@ -37,8 +44,8 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         get_input();
-        //수정된 부분 (게임오버체크)
-        GameOverCheck();
+        SnowAttack();
+        Reload();
     }
 
     void get_input()
@@ -135,32 +142,124 @@ public class PlayerController : MonoBehaviour
         {
             onGround = true;
         }
+        /*
+        //밟기
+        if (collision.gameObject.tag == "Enemy")
+        {
+            // 낙하 중이고 enemy 보다 위에 있을 때
+            if (rb.velocity.y < 0 && transform.position.y > collision.transform.position.y)
+            {
+                // attack
+                OnAttack(collision.transform);
+            }
+            else
+            {
+                // damage
+                OnDamaged(collision.transform.position);
+            }
+        }
+        */
     }
 
-    //수정된 부분 (게임오버체크)
-    void GameOverCheck()
+
+    public void SnowAttack()
     {
-        if (life <= 0)
+        if (Input.GetKey(KeyCode.Z) && curShotDelay >= maxShotDelay)
         {
-            GameOver();
-            return;
+            curShotDelay = 0;
+            Vector3 pos = new Vector3(transform.position.x + 1, transform.position.y + 2, transform.position.z);
+            GameObject snow = Instantiate(objPrefab, pos, transform.rotation);
+            Rigidbody2D rigid = snow.GetComponent<Rigidbody2D>();
+            axisH = Input.GetAxisRaw("Horizontal");
+            if (axisH > 0.0f)
+            {
+                rigid.AddForce(Vector2.right * 10, ForceMode2D.Impulse);
+                zero = true;
+            }
+            else if (axisH < 0.0f)
+            {
+                rigid.AddForce(Vector2.left * 10, ForceMode2D.Impulse);
+                zero = false;
+            }
+            else
+            {
+                if (zero)
+                {
+                    rigid.AddForce(Vector2.right * 10, ForceMode2D.Impulse);
+                }
+                else
+                {
+                    rigid.AddForce(Vector2.left * 10, ForceMode2D.Impulse);
+                }
+            }
         }
     }
 
-    //수정된 부분 (게임오버)
-    void GameOver()
+    public void Reload()
     {
-        Destroy(GameObject.FindGameObjectWithTag("Player")); // Player, Bear, Rabbit 오브젝트 파괴
-        Destroy(GameObject.FindGameObjectWithTag("Bear"));
-        Destroy(GameObject.FindGameObjectWithTag("Rabbit"));
-        //gameover=true;
+        curShotDelay += Time.deltaTime;
+    }
 
-        /*여러개일때?
-         GameObject[] bears = GameObject.FindGameObjectsWithTag("Bear");
-            foreach (GameObject bear in bears)
-            {
-                Destroy(bear); // Bear 오브젝트 파괴
-            }
-         */
+    public void OnAttack(Transform enemy)
+    {
+        // reaction
+        rb.AddForce(Vector2.up * 5, ForceMode2D.Impulse);
+
+        // enemy die
+        /*EnemyMove enemyMove = enemy.GetComponent<EnemyMove>();
+        enemyMove.OnDamaged();*/
+    }
+
+    public void OnDamaged(Vector2 targetPos)
+    {
+        // health down
+        //gameManager.HealthDown();
+
+        // chage layer
+        gameObject.layer = 11;
+        // Sprite Alpha
+        spriteRenderer.color = new Color(1, 1, 1, 0.4f);
+
+        // reaction forc
+        int dirc = transform.position.x - targetPos.x > 0 ? 1 : -1;
+        rb.AddForce(new Vector2(dirc, 1) * 7, ForceMode2D.Impulse);
+
+        // 충격 3초동안 유지
+        Invoke("OffDamaged", 3);
+    }
+
+    public void OffDamaged()
+    {
+        // chage layer
+        gameObject.layer = 10;
+        // Sprite Alpha
+        spriteRenderer.color = new Color(1, 1, 1, 1);
+    }
+
+    
+    public void OnDie()
+    {
+        /*// sprite alpha
+        spriteRenderer.color = new Color(1, 1, 1, 0.4f);
+        // sprite filp Y
+        spriteRenderer.filpY = true;
+        // collider disable
+        capsuleCollier.enabled = false;
+        // die effect jump
+        rb.AddForce(Vector2.up * 5, ForceMode2D.Impulse);*/
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        // stage1 태그에 부딪히면 다음 stage로 넘어감
+        if (collision.gameObject.tag == "stage1")
+        {
+            //gameManager.NextStage();
+        }
+    }
+
+    public void VelocityZero()
+    {
+        /*rb.velocity = Vector2.zero;*/    // 시작 위치를 0으로 하는 것.
     }
 }

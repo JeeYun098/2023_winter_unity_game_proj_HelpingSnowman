@@ -5,18 +5,14 @@ using UnityEngine;
 
 public class EnemyRabbit : MonoBehaviour
 {
-    public float xspeed = 2f;  //x축 움직일 속도
-    public float yspeed = 2f;  //y축 움직일 속도
-    public float height = 1f;  //y축 움직일 높이
-    public bool ChangeDirection = false;
-    private float originalY;
+    public float speed = 1.5f; // 이동 속도
+    public GameManager gameManager;
     private Rigidbody2D rb;
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        originalY = transform.position.y;
     }
 
     // Update is called once per frame
@@ -24,25 +20,13 @@ public class EnemyRabbit : MonoBehaviour
     {
         Move();
     }
-
     void Move()
     {
-        if (transform.position.y <= originalY || transform.position.y >= originalY + height)
-        {
-            if (ChangeDirection == false)
-            {
-                ChangeDirection = true;
-                yspeed = -yspeed; // y축 방향 전환
-            }
-        }
-        else
-        {
-            ChangeDirection = false;
-            rb.velocity = new Vector2(-xspeed, yspeed); // x축,y축으로 이동
-        }
+        // 왼쪽으로 이동
+        rb.velocity = new Vector2(-speed, rb.velocity.y);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D collision) //trigger체크, y축freeze필요
     {
         if (collision.gameObject.CompareTag("Player"))
         {
@@ -57,20 +41,6 @@ public class EnemyRabbit : MonoBehaviour
         Vector3 currentScale = player.transform.localScale;
         currentScale *= 0.8f; // 플레이어의 크기를 0.8배로 줄임
         player.transform.localScale = currentScale;
-        if (PlayerController.life > 0)
-        {
-            PlayerController.life--; //생명 감소
-            Debug.Log(PlayerController.life);
-        }
-
-        /*
-         void Attack()
-        {
-            if (attack)
-            {
-                Destroy(gameObject); // 현재 오브젝트 적 파괴
-            }
-        ]
-         */
+        gameManager.LifeDown(); //생명감소
     }
 }

@@ -5,6 +5,7 @@ using UnityEngine;
 public class EnemyBear : MonoBehaviour
 {
     public float speed = 1.5f; // 이동 속도
+    public GameManager gameManager;
     private Rigidbody2D rb;
 
     // Start is called before the first frame update
@@ -39,10 +40,6 @@ public class EnemyBear : MonoBehaviour
         Vector3 currentScale = player.transform.localScale;
         currentScale *= 0.8f; // 플레이어의 크기를 0.8배로 줄임
         player.transform.localScale = currentScale;
-        if (PlayerController.life > 0)
-        {
-            PlayerController.life--; //생명감소
-            Debug.Log(PlayerController.life);
-        }
+        gameManager.LifeDown(); //생명감소
     }
 }

@@ -17,7 +17,7 @@ public class ItemSnow : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -34,7 +34,7 @@ public class ItemSnow : MonoBehaviour
         if (gameManager.life < 5) //최대 생명 5개
         {
             Vector3 currentScale = player.transform.localScale;
-            currentScale *= 1.2f; // 플레이어의 크기를 1.2배로 늘림
+            currentScale *= 1.1f; // 플레이어의 크기를 1.1배로 늘림
             player.transform.localScale = currentScale;
             Debug.Log("아이템 눈 획득, 플레이어 크기 20% 증가");
             gameManager.LifeUp(); //생명증가
@@ -46,3 +46,4 @@ public class ItemSnow : MonoBehaviour
         }
     }
 }
+

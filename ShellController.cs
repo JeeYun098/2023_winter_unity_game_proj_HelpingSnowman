@@ -6,7 +6,6 @@ public class ShellController : MonoBehaviour
 {
     public float deleteTime = 30.0f;   // 제거할 시간 지정
 
-    // Start is called before the first frame update
     void Start()
     {
         Destroy(gameObject, deleteTime);

@@ -1,13 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI; //textUI사용
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    public PlayerController player;
+    public int stageIndex;
     public int life = 3;
     public Text txt_life;
+
+    public GameObject[] Stages;
+    public PlayerController player;
 
     void Update()
     {
@@ -49,4 +52,18 @@ public class GameManager : MonoBehaviour
         Destroy(GameObject.FindGameObjectWithTag("Rabbit"));
     }
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            ResetPlayerPosition(other.gameObject);
+            life--;
+        }
+    }
+
+    private void ResetPlayerPosition(GameObject player)
+    {
+        // 플레이어의 위치를 (0, 0, 0)으로 초기화
+        player.transform.position = Vector3.zero;
+    }
 }

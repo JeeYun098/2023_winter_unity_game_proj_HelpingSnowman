@@ -9,13 +9,11 @@ public class CameraManager : MonoBehaviour
     public float topLimit = 0.0f;
     public float bottomLimit = 0.0f;
 
-    // Start is called before the first frame update
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");   // 플레이어 인식
@@ -28,7 +26,7 @@ public class CameraManager : MonoBehaviour
 
             // 가로 방향 동기화
             // 양 끝에 이동 제한
-            if (x < leftLimit)
+            if ( x < leftLimit)
             {
                 x = leftLimit;
             }

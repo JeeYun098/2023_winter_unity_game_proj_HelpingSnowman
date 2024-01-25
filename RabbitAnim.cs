@@ -57,3 +57,4 @@ public class RabbitAnim : MonoBehaviour
         Destroy(gameObject);
     }
 }
+

@@ -57,3 +57,4 @@ public class BearAnim : MonoBehaviour
         Destroy(gameObject);
     }
 }
+

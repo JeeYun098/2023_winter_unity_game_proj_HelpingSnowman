@@ -35,8 +35,17 @@ public class EnemyRabbit : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
-            if (rb.velocity.y < 0 && transform.position.y > collision.transform.position.y)
-                return;
+            Debug.Log("충돌 발생: " + collision.gameObject.name);
+            Debug.Log($"Player Position: {collision.transform.position}");
+            Debug.Log($"Enemy Position: {transform.position}");
+
+            float relativeY = collision.transform.position.y - transform.position.y;
+
+            if (relativeY > 0 && rb.velocity.y < 0)
+            {
+                Debug.Log("밟기");
+                Destroy(gameObject); // 현재 오브젝트 적 파괴
+            }
             else
             {
                 PlayerShrink(collision.gameObject); // 적에 부딪히면 플레이어 크기 감소

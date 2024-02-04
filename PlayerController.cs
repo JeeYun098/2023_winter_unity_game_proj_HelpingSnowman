@@ -52,7 +52,6 @@ public class PlayerController : MonoBehaviour
         JumpControl();
         DashControl();
         PlayerMovingCheck();
-
     }
 
     void get_input()
@@ -65,11 +64,13 @@ public class PlayerController : MonoBehaviour
         {
             spriteRenderer.flipX = false;
             IsMoving = true;
+            zero = true;
         }
         else if (Input.GetKey(KeyCode.LeftArrow))
         {
             spriteRenderer.flipX = true;
             IsMoving = true;
+            zero = false;
         }
 
         // stop  // 추가
@@ -132,26 +133,28 @@ public class PlayerController : MonoBehaviour
             Vector3 pos = new Vector3(transform.position.x + 1, transform.position.y + 2, transform.position.z);
             GameObject snow = Instantiate(objPrefab, pos, transform.rotation);
             Rigidbody2D rigid = snow.GetComponent<Rigidbody2D>();
-            axisH = Input.GetAxisRaw("Horizontal");
-            if (axisH > 0.0f)
+            //axisH = Input.GetAxisRaw("Horizontal");
+            //if (axisH > 0.0f)
+            if (Input.GetKey(KeyCode.RightArrow))
             {
-                rigid.AddForce(Vector2.right * 10, ForceMode2D.Impulse);
-                zero = true;
+                rigid.AddForce(Vector2.right * 20, ForceMode2D.Impulse);
+                //zero = true;
             }
-            else if (axisH < 0.0f)
+            //else if (axisH < 0.0f)
+            else if (Input.GetKey(KeyCode.LeftArrow))
             {
-                rigid.AddForce(Vector2.left * 10, ForceMode2D.Impulse);
-                zero = false;
+                rigid.AddForce(Vector2.left * 20, ForceMode2D.Impulse);
+                //zero = false;
             }
             else
             {
                 if (zero)
                 {
-                    rigid.AddForce(Vector2.right * 10, ForceMode2D.Impulse);
+                    rigid.AddForce(Vector2.right * 20, ForceMode2D.Impulse);
                 }
                 else
                 {
-                    rigid.AddForce(Vector2.left * 10, ForceMode2D.Impulse);
+                    rigid.AddForce(Vector2.left * 20, ForceMode2D.Impulse);
                 }
             }
         }
@@ -167,9 +170,11 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.tag == "Bear"|| collision.gameObject.tag == "Rabbit")
         {
+            Debug.Log($"Player Velocity: {rb.velocity.y}");
             // 낙하 중이고 enemy 보다 위에 있을 때
             if (rb.velocity.y < 0 && transform.position.y > collision.transform.position.y)
             {
+                Debug.Log("밟기공격");
                 // attack
                 OnAttack(collision.transform);
             }
@@ -193,17 +198,29 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void PlayerShrink(GameObject player)
+    {
+        Vector3 currentScale = player.transform.localScale;
+        currentScale *= 0.9f; // 플레이어의 크기를 0.9배로 줄임
+        player.transform.localScale = currentScale;
+    }
+
     public void OnAttack(Transform enemy)
     {
         // reaction
         rb.AddForce(Vector2.up * 5, ForceMode2D.Impulse);
         // enemy die
+        Destroy(enemy.gameObject);
     }
 
     public void OnDamaged(Vector2 targetPos)
     {
+        Debug.Log("생명감소");
         // health down
         gameManager.LifeDown();
+        Debug.Log("크기감소");
+        // shrink
+        PlayerShrink(gameObject); //플레이어크기감소
         Debug.Log("무적상태");
         // change layer
         gameObject.layer = 11;

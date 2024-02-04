@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class Spike : MonoBehaviour
 {
-    public GameManager gameManager;
-    private Rigidbody2D rbody;
+    //public GameManager gameManager;
+    //private Rigidbody2D rbody;
 
     // Start is called before the first frame update
     void Start()
     {
-        rbody = GetComponent<Rigidbody2D>();
+        //rbody = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -19,6 +19,7 @@ public class Spike : MonoBehaviour
 
     }
 
+    /*
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Player")
@@ -34,4 +35,5 @@ public class Spike : MonoBehaviour
         currentScale *= 0.9f; // 플레이어의 크기를 0.9배로 줄임
         player.transform.localScale = currentScale;
     }
+    */
 }

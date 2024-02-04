@@ -33,6 +33,7 @@ public class EnemyRabbit : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        /*
         if (collision.gameObject.tag == "Player")
         {
             Debug.Log("충돌 발생: " + collision.gameObject.name);
@@ -53,6 +54,7 @@ public class EnemyRabbit : MonoBehaviour
                 Destroy(gameObject); // 현재 오브젝트 적 파괴
             }
         }
+        */
 
         if (collision.gameObject.CompareTag("Wall"))
         {
@@ -68,10 +70,12 @@ public class EnemyRabbit : MonoBehaviour
         }
     }
 
+    /*
     void PlayerShrink(GameObject player)
     {
         Vector3 currentScale = player.transform.localScale;
         currentScale *= 0.9f; // 플레이어의 크기를 0.9배로 줄임
         player.transform.localScale = currentScale;
     }
+    */
 }

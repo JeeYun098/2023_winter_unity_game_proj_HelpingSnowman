@@ -12,19 +12,19 @@ public class PlayerController : MonoBehaviour
     public GameManager gameManager;
 
     Rigidbody2D rb;
-    float axisH = 0.0f;
-    public float speed = 4.0f;   // 이동 속도
+    //float axisH = 0.0f;
+    public float speed = 12.0f;   // 이동 속도
 
     public LayerMask groundLayer;  // 착지 레이어     
 
     public GameObject objPrefab;   // 발사체
-    public float maxShotDelay;
+    public float maxShotDelay = 1.0f;
     public float curShotDelay;
-    public float fireSpeedx = 30.0f;
+    public float fireSpeedx = 100.0f;
     bool zero = true;
 
     private SpriteRenderer spriteRenderer;
-    public string targetSceneName = "Stage1";
+    //public string targetSceneName = "Stage1";
 
     public bool left = false;
 
@@ -33,8 +33,8 @@ public class PlayerController : MonoBehaviour
     private bool IsMoving = false;
 
     private int jumpcount = 0;
-    public float jumpForce = 300f;
-    public float dashForce = 300f;
+    public float jumpForce = 2000f;
+    public float dashForce = 1500f;
 
 
     void Start()
@@ -52,6 +52,23 @@ public class PlayerController : MonoBehaviour
         JumpControl();
         DashControl();
         PlayerMovingCheck();
+    }
+
+    public void Init()
+    {
+        speed = 12.0f;   // 이동 속도
+        maxShotDelay = 1.0f;
+        fireSpeedx = 100.0f;
+        zero = true;
+        left = false;
+        MovingAnim = 0;
+        IsMoving = false;
+        jumpcount = 0;
+        jumpForce = 2000f;
+        dashForce = 1500f;
+        gameManager.life = 3; //생명 초기화
+        gameManager.txt_life.text = gameManager.life.ToString();
+        transform.position = Vector3.zero;
     }
 
     void get_input()
@@ -262,7 +279,8 @@ public class PlayerController : MonoBehaviour
         if (other.CompareTag("stage")) // 충돌한 객체가 "Player" 태그를 가진 경우
         {
             Debug.Log("씬 바뀜");
-            SceneManager.LoadScene(targetSceneName);
+            //SceneManager.LoadScene(targetSceneName);
+            SceneManager.LoadScene("3_Boss");
         }
     }
 }

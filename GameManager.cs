@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -9,6 +11,7 @@ public class GameManager : MonoBehaviour
     {
         NONE = 0,   
         START,
+        PLAY,
         RETRY,
         GAMEOVER,
         END
@@ -21,13 +24,23 @@ public class GameManager : MonoBehaviour
     public GameObject g_ui_GameOver;
     public GameObject g_ui_GameEnd;
 
-    public int stageIndex;
+    //public int stageIndex;
     public int life = 3;
     public Text txt_life;
 
-    public GameObject[] Stages;
+    //public GameObject[] Stages;
     public PlayerController_boss boss_player;
     public PlayerController player;
+
+    public GameObject prf_bear; //bear prefab
+    public GameObject prf_rabbit; //rabbit prefab
+    public GameObject prf_item; //item prefab
+    public List<GameObject> lst_bear; //적 리스트
+    public List<EnemyBear> lst_beargroup; //적 그룹 리스트
+    public List<GameObject> lst_rabbit; //적 리스트
+    public List<EnemyRabbit> lst_rabbitgroup; //적 그룹 리스트
+    public List<GameObject> lst_item; //아이템 리스트
+    public List<ItemSnow> lst_itemgroup; //아이템 그룹 리스트
 
     void Start()
     {
@@ -37,8 +50,6 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         GameState();
-        GameOverCheck();
-        txt_life.text = life.ToString(); //생명 UI
     }
 
     void GameState()
@@ -55,6 +66,10 @@ public class GameManager : MonoBehaviour
             case E_STATE.START:
                 gamestate = E_STATE.NONE;
                 StartCoroutine(GameStart());
+                break;
+
+            case E_STATE.PLAY:
+                GamePlay();
                 break;
 
             case E_STATE.RETRY:
@@ -81,10 +96,22 @@ public class GameManager : MonoBehaviour
         g_ui_GameRetry.SetActive(false);
         g_ui_GameEnd.SetActive(false);
 
-        //Init();
+        //player.Init();
         yield return new WaitForSeconds(1.5f);
 
         g_ui_GameStart.SetActive(false);
+
+        //CreateEnemy(); //적 생성
+        //CreateCoin(); //코인 생성
+
+        gamestate = E_STATE.PLAY;
+    }
+    void GamePlay()
+    {
+        //플레이 멈추는 경우 생명이 모두 사라졌는지 체크하는 알고리즘
+        GameOverCheck();
+
+        txt_life.text = life.ToString(); //플레이어 생명을 UI에 문자로 입력
     }
     void GameRetry()
     {
@@ -104,17 +131,21 @@ public class GameManager : MonoBehaviour
     }
     void GameEnd()
     {
-        g_ui_GameStart.SetActive(false);
-        g_ui_GameOver.SetActive(false);
-        g_ui_GameRetry.SetActive(true);
-        g_ui_GameEnd.SetActive(true);
-
+        //g_ui_GameStart.SetActive(false);
+        //g_ui_GameOver.SetActive(false);
+        //g_ui_GameRetry.SetActive(true);
+        //g_ui_GameEnd.SetActive(true);
         DestroyAll();
+        Application.Quit();
     }
 
-    public void OnClickStart()
+    public void OnClickRetry()
     {
-        gamestate = E_STATE.START;
+        g_ui_GameOver.SetActive(false);
+        g_ui_GameRetry.SetActive(false);
+        g_ui_GameEnd.SetActive(false);
+        //gamestate = E_STATE.START;
+        SceneManager.LoadScene("2_GameStage");
     }
 
     public void OnClickGameEnd()
@@ -122,11 +153,20 @@ public class GameManager : MonoBehaviour
         gamestate = E_STATE.END;
     }
 
+    /*
     public void Init()
     {
         player.transform.position = Vector3.zero;
+        txt_life.text = life.ToString(); //생명 UI
         life = 3;
+        player.speed = 12.0f;
+        player.fireSpeedx = 100.0f;
+        player.left = false;
+        player.MovingAnim = 0;
+        player.jumpForce = 2000f;
+        player.dashForce = 1500f;
     }
+    */
     
     public void LifeDown()
     {
@@ -158,11 +198,13 @@ public class GameManager : MonoBehaviour
 
     void DestroyAll()
     {
-        Destroy(GameObject.FindGameObjectWithTag("Player")); // Player, Bear, Rabbit 오브젝트 파괴
+        Destroy(GameObject.FindGameObjectWithTag("Player")); // Player, Bear, Rabbit, Snow 오브젝트 파괴
         Destroy(GameObject.FindGameObjectWithTag("Bear"));
         Destroy(GameObject.FindGameObjectWithTag("Rabbit"));
+        Destroy(GameObject.FindGameObjectWithTag("Snow"));
     }
 
+    //화면을 벗어나면 원위치, 생명-1
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))

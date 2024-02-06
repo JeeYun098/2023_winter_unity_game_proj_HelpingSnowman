@@ -32,15 +32,7 @@ public class GameManager : MonoBehaviour
     public PlayerController_boss boss_player;
     public PlayerController player;
 
-    public GameObject prf_bear; //bear prefab
-    public GameObject prf_rabbit; //rabbit prefab
-    public GameObject prf_item; //item prefab
-    public List<GameObject> lst_bear; //적 리스트
-    public List<EnemyBear> lst_beargroup; //적 그룹 리스트
-    public List<GameObject> lst_rabbit; //적 리스트
-    public List<EnemyRabbit> lst_rabbitgroup; //적 그룹 리스트
-    public List<GameObject> lst_item; //아이템 리스트
-    public List<ItemSnow> lst_itemgroup; //아이템 그룹 리스트
+    public GameObject bgm;
 
     void Start()
     {
@@ -54,10 +46,11 @@ public class GameManager : MonoBehaviour
 
     void GameState()
     {
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Escape))
             gamestate = E_STATE.END;
         if (Input.GetKeyDown(KeyCode.R))
             gamestate = E_STATE.RETRY;
+
         switch (gamestate)
         {
             case E_STATE.NONE:
@@ -96,6 +89,8 @@ public class GameManager : MonoBehaviour
         g_ui_GameRetry.SetActive(false);
         g_ui_GameEnd.SetActive(false);
 
+        bgm.SetActive(true);
+
         //player.Init();
         yield return new WaitForSeconds(1.5f);
 
@@ -111,7 +106,7 @@ public class GameManager : MonoBehaviour
         //플레이 멈추는 경우 생명이 모두 사라졌는지 체크하는 알고리즘
         GameOverCheck();
 
-        txt_life.text = life.ToString(); //플레이어 생명을 UI에 문자로 입력
+        txt_life.text = "life: " + life.ToString(); //플레이어 생명을 UI에 문자로 입력
     }
     void GameRetry()
     {
@@ -119,15 +114,19 @@ public class GameManager : MonoBehaviour
         g_ui_GameOver.SetActive(false);
         g_ui_GameRetry.SetActive(true);
         g_ui_GameEnd.SetActive(false);
+
+        bgm.SetActive(false);
     }
     void GameOver()
     {
-        g_ui_GameStart.SetActive(false);
-        g_ui_GameOver.SetActive(true);
-        g_ui_GameRetry.SetActive(true);
-        g_ui_GameEnd.SetActive(false);
+        //g_ui_GameStart.SetActive(false);
+        //g_ui_GameOver.SetActive(true);
+        //g_ui_GameRetry.SetActive(true);
+        //g_ui_GameEnd.SetActive(false);
 
+        bgm.SetActive(false);
         DestroyAll();
+        SceneManager.LoadScene("5_GameOver_game");
     }
     void GameEnd()
     {
@@ -135,6 +134,8 @@ public class GameManager : MonoBehaviour
         //g_ui_GameOver.SetActive(false);
         //g_ui_GameRetry.SetActive(true);
         //g_ui_GameEnd.SetActive(true);
+
+        bgm.SetActive(false);
         DestroyAll();
         Application.Quit();
     }
@@ -148,12 +149,12 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene("2_GameStage");
     }
 
+    /*
     public void OnClickGameEnd()
     {
         gamestate = E_STATE.END;
     }
 
-    /*
     public void Init()
     {
         player.transform.position = Vector3.zero;
@@ -167,7 +168,7 @@ public class GameManager : MonoBehaviour
         player.dashForce = 1500f;
     }
     */
-    
+
     public void LifeDown()
     {
         if (life > 0)

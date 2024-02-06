@@ -36,6 +36,8 @@ public class PlayerController : MonoBehaviour
     public float jumpForce = 2000f;
     public float dashForce = 1500f;
 
+    public GameObject hitEffectSound;
+
 
     void Start()
     {
@@ -52,23 +54,6 @@ public class PlayerController : MonoBehaviour
         JumpControl();
         DashControl();
         PlayerMovingCheck();
-    }
-
-    public void Init()
-    {
-        speed = 12.0f;   // 이동 속도
-        maxShotDelay = 1.0f;
-        fireSpeedx = 100.0f;
-        zero = true;
-        left = false;
-        MovingAnim = 0;
-        IsMoving = false;
-        jumpcount = 0;
-        jumpForce = 2000f;
-        dashForce = 1500f;
-        gameManager.life = 3; //생명 초기화
-        gameManager.txt_life.text = gameManager.life.ToString();
-        transform.position = Vector3.zero;
     }
 
     void get_input()
@@ -232,6 +217,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnDamaged(Vector2 targetPos)
     {
+        hitEffectSound.SetActive(true);
         Debug.Log("생명감소");
         // health down
         gameManager.LifeDown();
@@ -259,6 +245,7 @@ public class PlayerController : MonoBehaviour
         gameObject.layer = 10;
         // Sprite Alpha
         spriteRenderer.color = new Color(1, 1, 1, 1);
+        hitEffectSound.SetActive(false);
     }
 
     public void OnDie()
